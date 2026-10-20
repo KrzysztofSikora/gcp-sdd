@@ -15,11 +15,11 @@ the 1–2 hour budget (B-19); S-03 is the first thing to cut.
 ## Overview
 | ID | Issue | change-id | Type | Covers | Depends on | Size | Status |
 |----|-------|-----------|------|--------|------------|------|--------|
-| F-01 | - | repo-skeleton | foundation | C-01 … C-09, NFR-04 | - | S (~15 min) | done |
-| S-01 | - | analyzer-service | slice | FR-02, FR-05, FR-06, FR-07 AC1, FR-08 | F-01 | M (~25 min) | todo |
-| S-02 | - | api-analyze | slice | FR-01, FR-03, FR-04, FR-06, FR-07, FR-08, NFR-02, NFR-03 | S-01 | M (~40 min) | todo |
-| S-03 | - | local-compose | slice | FR-09, NFR-01 | S-02 | S (~10 min) | todo |
-| S-04 | - | cloud-run-deploy | slice | FR-10, Q-01 = A | S-02 | S (~20 min) | todo |
+| F-01 | #2 | repo-skeleton | foundation | C-01 … C-09, NFR-04 | - | S (~15 min) | done |
+| S-01 | #3 | analyzer-service | slice | FR-02, FR-05, FR-06, FR-07 AC1, FR-08 | F-01 | M (~25 min) | done |
+| S-02 | #4 | api-analyze | slice | FR-01, FR-03, FR-04, FR-06, FR-07, FR-08, NFR-02, NFR-03 | S-01 | M (~40 min) | todo |
+| S-03 | #5 | local-compose | slice | FR-09, NFR-01 | S-02 | S (~10 min) | todo |
+| S-04 | #6 | cloud-run-deploy | slice | FR-10, Q-01 = A | S-02 | S (~20 min) | todo |
 
 ## Items
 
@@ -45,11 +45,11 @@ the 1–2 hour budget (B-19); S-03 is the first thing to cut.
 - Covers: FR-02 AC1–AC6, FR-05 AC1–AC2, FR-06 AC1, FR-07 AC1, FR-08 AC1–AC2 (analyzer image).
 - Depends on: F-01
 - Tasks:
-  - [ ] S-01.1 `app/analysis.py`: `analyze(text)` per design algorithm; `tests/test_analysis.py`
+  - [x] S-01.1 `app/analysis.py`: `analyze(text)` per design algorithm; `tests/test_analysis.py`
         with one test per FR-02 AC (examples copied from the requirements).
-  - [ ] S-01.2 `app/main.py`: pydantic request/response models, `POST /analyze`,
+  - [x] S-01.2 `app/main.py`: pydantic request/response models, `POST /analyze`,
         `GET /healthz`; `tests/test_api.py` for FR-05 AC1–AC2 and FR-06.
-  - [ ] S-01.3 `services/analyzer/Dockerfile` (python:3.13-slim, non-root, `$PORT`),
+  - [x] S-01.3 `services/analyzer/Dockerfile` (python:3.13-slim, non-root, `$PORT`),
         `.dockerignore`; add to `make docker-build`.
 - Acceptance: requirement ACs listed under *Covers*; `docker run -e PORT=8081 -p 8081:8081`
   then `curl localhost:8081/healthz` → `{"status":"ok"}`.
@@ -119,4 +119,4 @@ the 1–2 hour budget (B-19); S-03 is the first thing to cut.
 
 ## Open roadmap questions
 - Q-01, Q-02, Q-03: decided (see *Decided up front*).
-- Create one GitHub issue per item and fill the *Issue* column? (optional; `ship #<n>` uses them)
+- GitHub roadmap: tracking issue #1, one sub-issue per item (#2 … #6).

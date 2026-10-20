@@ -28,4 +28,4 @@ test-py:
 	cd $(ANALYZER_DIR) && $(PYTHON) -m pytest -q
 
 docker-build:
-	@echo "no images yet"
+	docker build -t text-analyzer:dev $(ANALYZER_DIR)
