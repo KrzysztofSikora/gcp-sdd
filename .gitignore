@@ -1,0 +1,22 @@
+# Autonomous workflow runtime state and session logs
+.workflow/
+
+# Go
+/bin/
+*.test
+*.out
+coverage.*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Local configuration (template: .env.example)
+.env
+.env*.local
