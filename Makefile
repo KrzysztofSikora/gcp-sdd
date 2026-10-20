@@ -29,3 +29,4 @@ test-py:
 
 docker-build:
 	docker build -t text-analyzer:dev $(ANALYZER_DIR)
+	docker build -t text-api:dev $(API_DIR)

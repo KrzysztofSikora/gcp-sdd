@@ -17,7 +17,7 @@ the 1–2 hour budget (B-19); S-03 is the first thing to cut.
 |----|-------|-----------|------|--------|------------|------|--------|
 | F-01 | #2 | repo-skeleton | foundation | C-01 … C-09, NFR-04 | - | S (~15 min) | done |
 | S-01 | #3 | analyzer-service | slice | FR-02, FR-05, FR-06, FR-07 AC1, FR-08 | F-01 | M (~25 min) | done |
-| S-02 | #4 | api-analyze | slice | FR-01, FR-03, FR-04, FR-06, FR-07, FR-08, NFR-02, NFR-03 | S-01 | M (~40 min) | todo |
+| S-02 | #4 | api-analyze | slice | FR-01, FR-03, FR-04, FR-06, FR-07, FR-08, NFR-02, NFR-03 | S-01 | M (~40 min) | done |
 | S-03 | #5 | local-compose | slice | FR-09, NFR-01 | S-02 | S (~10 min) | todo |
 | S-04 | #6 | cloud-run-deploy | slice | FR-10, Q-01 = A | S-02 | S (~20 min) | todo |
 
@@ -62,17 +62,17 @@ the 1–2 hour budget (B-19); S-03 is the first thing to cut.
 - Covers: FR-01 AC1–AC3, FR-03 AC1–AC8, FR-04 AC1–AC5, FR-06 AC1, FR-07 AC1–AC3, FR-08 (API image), NFR-02, NFR-03.
 - Depends on: S-01 (contract and example bodies)
 - Tasks:
-  - [ ] S-02.1 `internal/config`: `Load(getenv)` for `PORT`, `ANALYZER_URL`, `ANALYZER_TIMEOUT`
+  - [x] S-02.1 `internal/config`: `Load(getenv)` for `PORT`, `ANALYZER_URL`, `ANALYZER_TIMEOUT`
         with tests for defaults and every invalid case (FR-07).
-  - [ ] S-02.2 `internal/analyzer`: client + typed errors; tests against `httptest.Server`
+  - [x] S-02.2 `internal/analyzer`: client + typed errors; tests against `httptest.Server`
         for 200, non-200, bad JSON, invalid result, timeout, unavailable (FR-04).
-  - [ ] S-02.3 `internal/httpapi/validate.go`: decoding and validation; table test with one row
+  - [x] S-02.3 `internal/httpapi/validate.go`: decoding and validation; table test with one row
         per FR-03 AC (status, `code`, analyzer not called).
-  - [ ] S-02.4 `internal/httpapi/handler.go`: `/analyze`, `/healthz`, catch-all `404`, JSON
+  - [x] S-02.4 `internal/httpapi/handler.go`: `/analyze`, `/healthz`, catch-all `404`, JSON
         error helper, request-log middleware without the body, panic recovery → `500`;
         tests for FR-01 (fake analyzer) and FR-04 mapping.
-  - [ ] S-02.5 `main.go`: wiring, `http.Server` with timeouts, SIGTERM graceful shutdown (NFR-03).
-  - [ ] S-02.6 `services/api/Dockerfile` (multi-stage, `CGO_ENABLED=0`, distroless nonroot),
+  - [x] S-02.5 `main.go`: wiring, `http.Server` with timeouts, SIGTERM graceful shutdown (NFR-03).
+  - [x] S-02.6 `services/api/Dockerfile` (multi-stage, `CGO_ENABLED=0`, distroless nonroot),
         `.dockerignore`; add to `make docker-build`.
 - Acceptance: requirement ACs listed under *Covers*; `go test ./...` with no network beyond
   localhost.

@@ -11,7 +11,7 @@ Implements `specs/requirements.md`. Plays the role of the workflow's tech-stack 
 | Analyzer language | Python | 3.13 | Mandated (C-02); current stable, matches the slim base image |
 | Analyzer framework | FastAPI | 0.156.x (pinned exactly in `pyproject.toml`) | Mandated (C-02) |
 | ASGI server | Uvicorn | 0.54.x (pinned exactly) | FastAPI's default server; one process is enough on Cloud Run |
-| Analyzer test tools (dev only) | pytest, httpx (for FastAPI `TestClient`), ruff | latest at F-01, pinned | Minimal set for tests + lint (C-07) |
+| Analyzer test tools (dev only) | pytest, httpx2 (for FastAPI `TestClient`), ruff | latest at F-01, pinned | Minimal set for tests + lint (C-07) |
 | Go tests | `testing` + `net/http/httptest` | – | No test framework needed |
 | Go lint | `gofmt -l`, `go vet` | toolchain | Built into the toolchain |
 | Containers | Multi-stage Docker builds | – | FR-08; independent images (C-04) |
@@ -94,7 +94,7 @@ Shutdown (NFR-03): `signal.NotifyContext(SIGINT, SIGTERM)` → `server.Shutdown`
 ### Analyzer layout (`services/analyzer`)
 ```
 services/analyzer/
-  pyproject.toml               runtime deps: fastapi, uvicorn (exact pins); dev: pytest, httpx, ruff
+  pyproject.toml               runtime deps: fastapi, uvicorn (exact pins); dev: pytest, httpx2, ruff
   app/__init__.py
   app/analysis.py              analyze(text: str) -> AnalysisResult   (pure, no FastAPI imports)
   app/main.py                  FastAPI app: POST /analyze, GET /healthz; pydantic models
