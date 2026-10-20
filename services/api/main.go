@@ -37,7 +37,11 @@ func run(ctx context.Context, getenv func(string) string, logger *slog.Logger) e
 	if err != nil {
 		return err
 	}
-	client := analyzer.New(cfg.AnalyzerURL, cfg.AnalyzerTimeout, nil)
+	var transport http.RoundTripper // nil: plain HTTP, as locally and in tests
+	if cfg.AnalyzerAuth == config.AuthGoogleIDToken {
+		transport = analyzer.NewIDTokenTransport(cfg.AnalyzerURL, nil)
+	}
+	client := analyzer.New(cfg.AnalyzerURL, cfg.AnalyzerTimeout, transport)
 	srv := &http.Server{
 		Handler:           httpapi.NewHandler(client, logger),
 		ReadHeaderTimeout: 5 * time.Second,
@@ -49,7 +53,7 @@ func run(ctx context.Context, getenv func(string) string, logger *slog.Logger) e
 	if err != nil {
 		return err
 	}
-	logger.Info("listening", "port", cfg.Port, "analyzer_url", cfg.AnalyzerURL)
+	logger.Info("listening", "port", cfg.Port, "analyzer_url", cfg.AnalyzerURL, "analyzer_auth", cfg.AnalyzerAuth)
 
 	errCh := make(chan error, 1)
 	go func() { errCh <- srv.Serve(ln) }()

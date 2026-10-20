@@ -14,6 +14,7 @@ client ──HTTPS──▶ text-api (Go, public) ──HTTP──▶ text-analy
 | `specs/requirements.md` | requirements with acceptance criteria |
 | `specs/design.md` | architecture, stack, API contracts, open questions |
 | `specs/tasks.md` | implementation tasks |
+| `deploy/cloud-run.md` | Cloud Run deployment instructions |
 | `docs/workflow.md` | the spec-driven, AI-assisted workflow |
 
 ## Run locally
@@ -37,6 +38,13 @@ make setup                                   # Python venv with dev dependencies
 ```
 
 Checks: `make lint`, `make test`, `make docker-build`.
+
+## Deploy to Cloud Run
+
+Step-by-step instructions, with the analyzer kept private through IAM: `deploy/cloud-run.md`.
+Nothing is deployed automatically and no GCP credentials are needed to build or test. Both
+services scale to zero, so an idle deployment costs close to nothing; the doc's *Costs*
+section covers min/max instances.
 
 ## API
 

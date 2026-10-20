@@ -20,11 +20,18 @@ type Config struct {
 	Port            string
 	AnalyzerURL     string // absolute http(s) URL without a trailing slash
 	AnalyzerTimeout time.Duration
+	AnalyzerAuth    string // AuthNone or AuthGoogleIDToken
 }
+
+// Values of ANALYZER_AUTH (FR-07 AC4).
+const (
+	AuthNone          = "none"
+	AuthGoogleIDToken = "google-id-token"
+)
 
 // Load builds a Config from getenv (os.Getenv in production).
 func Load(getenv func(string) string) (Config, error) {
-	cfg := Config{Port: defaultPort, AnalyzerTimeout: defaultAnalyzerTimeout}
+	cfg := Config{Port: defaultPort, AnalyzerTimeout: defaultAnalyzerTimeout, AnalyzerAuth: AuthNone}
 
 	if port := getenv("PORT"); port != "" {
 		n, err := strconv.Atoi(port)
@@ -50,6 +57,14 @@ func Load(getenv func(string) string) (Config, error) {
 			return Config{}, fmt.Errorf("ANALYZER_TIMEOUT must be a positive Go duration such as 5s, got %q", t)
 		}
 		cfg.AnalyzerTimeout = d
+	}
+
+	switch auth := getenv("ANALYZER_AUTH"); auth {
+	case "", AuthNone:
+	case AuthGoogleIDToken:
+		cfg.AnalyzerAuth = auth
+	default:
+		return Config{}, fmt.Errorf("ANALYZER_AUTH must be %q or %q, got %q", AuthNone, AuthGoogleIDToken, auth)
 	}
 	return cfg, nil
 }

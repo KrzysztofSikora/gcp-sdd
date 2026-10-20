@@ -19,7 +19,7 @@ the 1–2 hour budget (B-19); S-03 is the first thing to cut.
 | S-01 | #3 | analyzer-service | slice | FR-02, FR-05, FR-06, FR-07 AC1, FR-08 | F-01 | M (~25 min) | done |
 | S-02 | #4 | api-analyze | slice | FR-01, FR-03, FR-04, FR-06, FR-07, FR-08, NFR-02, NFR-03 | S-01 | M (~40 min) | done |
 | S-03 | #5 | local-compose | slice | FR-09, NFR-01 | S-02 | S (~10 min) | done |
-| S-04 | #6 | cloud-run-deploy | slice | FR-10, Q-01 = A | S-02 | S (~20 min) | todo |
+| S-04 | #6 | cloud-run-deploy | slice | FR-10, Q-01 = A | S-02 | S (~20 min) | done |
 
 ## Items
 
@@ -99,13 +99,13 @@ the 1–2 hour budget (B-19); S-03 is the first thing to cut.
 - Covers: FR-10 AC1–AC4; Q-01.
 - Depends on: S-02
 - Tasks:
-  - [ ] S-04.1 `internal/analyzer`: optional ID-token transport
+  - [x] S-04.1 `internal/analyzer`: optional ID-token transport
         (`ANALYZER_AUTH=google-id-token`; token from the metadata server, cached until expiry);
         tests with a fake metadata server; off by default.
-  - [ ] S-04.2 `deploy/cloud-run.md`: prerequisites (APIs to enable, `gcloud` login — done by
+  - [x] S-04.2 `deploy/cloud-run.md`: prerequisites (APIs to enable, `gcloud` login — done by
         the person, never by an agent), placeholders `PROJECT_ID`, `REGION`; deploy analyzer →
         read URL → (IAM binding / VPC flags per Q-01) → deploy API → `curl` check → cleanup.
-  - [ ] S-04.3 README: link to the deployment doc and a "costs" note (min instances, free tier).
+  - [x] S-04.3 README: link to the deployment doc and a "costs" note (min instances, free tier).
 - Acceptance: FR-10 AC1–AC4 reviewed by reading; no command executed by the workflow.
 - Unknowns: real Cloud Run behaviour is `UNVERIFIED` until the person deploys (human check in the PR).
 - Decided up front: Q-01 = A (user): `--no-allow-unauthenticated` on the analyzer, `roles/run.invoker` for the API's service account, ID token from the metadata server.
