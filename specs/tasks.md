@@ -15,7 +15,7 @@ the 1–2 hour budget (B-19); S-03 is the first thing to cut.
 ## Overview
 | ID | Issue | change-id | Type | Covers | Depends on | Size | Status |
 |----|-------|-----------|------|--------|------------|------|--------|
-| F-01 | - | repo-skeleton | foundation | C-01 … C-09, NFR-04 | - | S (~15 min) | todo |
+| F-01 | - | repo-skeleton | foundation | C-01 … C-09, NFR-04 | - | S (~15 min) | done |
 | S-01 | - | analyzer-service | slice | FR-02, FR-05, FR-06, FR-07 AC1, FR-08 | F-01 | M (~25 min) | todo |
 | S-02 | - | api-analyze | slice | FR-01, FR-03, FR-04, FR-06, FR-07, FR-08, NFR-02, NFR-03 | S-01 | M (~40 min) | todo |
 | S-03 | - | local-compose | slice | FR-09, NFR-01 | S-02 | S (~10 min) | todo |
@@ -28,13 +28,13 @@ the 1–2 hour budget (B-19); S-03 is the first thing to cut.
 - Covers: C-01 … C-09, NFR-04; design §Go API layout, §Analyzer layout, §Local development.
 - Depends on: -
 - Tasks:
-  - [ ] F-01.1 `services/api/go.mod` (module path from design, `go 1.24`), `main.go` that
+  - [x] F-01.1 `services/api/go.mod` (module path from design, `go 1.24`), `main.go` that
         starts and exits cleanly; one trivial test.
-  - [ ] F-01.2 `services/analyzer/pyproject.toml` with exact pins (fastapi, uvicorn; dev:
+  - [x] F-01.2 `services/analyzer/pyproject.toml` with exact pins (fastapi, uvicorn; dev:
         pytest, httpx, ruff), `app/__init__.py`, one trivial test.
-  - [ ] F-01.3 Root `Makefile`: `lint` (`gofmt -l` must print nothing, `go vet ./...`,
+  - [x] F-01.3 Root `Makefile`: `lint` (`gofmt -l` must print nothing, `go vet ./...`,
         `ruff check`), `test` (`go test ./...`, `pytest`), `docker-build` (placeholder until S-01/S-02).
-  - [ ] F-01.4 `.github/workflows/ci.yml`: `make lint` and `make test` on every PR (no GCP secrets).
+  - [x] F-01.4 `.github/workflows/ci.yml`: `make lint` and `make test` on every PR (no GCP secrets).
 - Acceptance: `make lint` and `make test` exit 0; CI green on the PR.
 - Unknowns: -
 - Decided up front: versions per design §Summary.
