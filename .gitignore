@@ -20,3 +20,5 @@ htmlcov/
 # Local configuration (template: .env.example)
 .env
 .env*.local
+*.egg-info/
+build/

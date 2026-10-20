@@ -1,6 +1,6 @@
 # Requirements (PRD): Text Analysis API
 
-Status: **DRAFT, awaiting user approval** (B-15).
+Status: **APPROVED** by the user on 2026-10-20 ("zatwierdzam domyślne"): Q-01 = A, Q-02 and Q-03 kept as proposed.
 Sources: `docs/brief.md` (B-n), `context/shape-notes.md` (D-nn, A-nn, NG-nn, Q-nn).
 This file says **what** is built and how we know it works. How it is built is in
 `specs/design.md`.
@@ -106,6 +106,11 @@ and **the analyzer receives no request**.
   `http`/`https` URL, Then it exits with a non-zero status and a message naming the variable.
 - AC3: Given `ANALYZER_TIMEOUT` (Go duration, e.g. `5s`), Then the API uses it as the analyzer
   timeout; invalid values make the API exit non-zero at startup.
+- AC4 (Q-01 = A): Given `ANALYZER_AUTH` unset or `none`, Then analyzer requests carry no
+  `Authorization` header. Given `google-id-token`, Then each analyzer request carries
+  `Authorization: Bearer <token>` with a token fetched from the metadata server for audience
+  `ANALYZER_URL` (reused until shortly before it expires); failure to get a token → `502
+  analyzer_unavailable`. Any other value → the API exits non-zero at startup.
 
 ### FR-08 Containers (Must, covers US-05, B-17, C-04)
 - AC1: Given Docker, When `docker build` runs in `services/api` and in `services/analyzer`,
@@ -196,9 +201,8 @@ generation tooling, no metrics/tracing beyond the request log line.
 | B-24 | - | FR-08 AC2 | C-09 |
 | B-25 | - | - | workflow rule in `CLAUDE.md` |
 
-## Open questions
-- Q-01 How the analyzer is made private on Cloud Run — see `specs/design.md` §Open questions.
-  Affects FR-10 AC2 and possibly one small piece of API code.
-- Q-02 Are the limits right: 10,000 characters, 256 KiB body, 10 s analyzer timeout? (A-05, FR-03, FR-04)
-- Q-03 Is the word definition in A-03 / FR-02 AC2 acceptable (letters/digits, inner
-  apostrophes, `_` splits, digits count as words)?
+## Decided questions
+- Q-01 → **A** (user, 2026-10-20): the analyzer is private through Cloud Run IAM; the API
+  sends a Google-signed ID token. Platform service-to-service auth, not end-user auth (B-20 holds).
+- Q-02 → kept (user): 10,000 characters, 256 KiB body, 10 s analyzer timeout.
+- Q-03 → kept (user): word definition as in A-03 / FR-02 AC2.

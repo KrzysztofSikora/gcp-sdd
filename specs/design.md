@@ -1,6 +1,6 @@
 # Design: Text Analysis API
 
-Status: **DRAFT, awaiting user approval** (B-15).
+Status: **APPROVED** by the user on 2026-10-20 ("zatwierdzam domyślne"): Q-01 = A, Q-02 and Q-03 kept as proposed.
 Implements `specs/requirements.md`. Plays the role of the workflow's tech-stack document.
 
 ## Summary
@@ -11,7 +11,7 @@ Implements `specs/requirements.md`. Plays the role of the workflow's tech-stack 
 | Analyzer language | Python | 3.13 | Mandated (C-02); current stable, matches the slim base image |
 | Analyzer framework | FastAPI | 0.156.x (pinned exactly in `pyproject.toml`) | Mandated (C-02) |
 | ASGI server | Uvicorn | 0.54.x (pinned exactly) | FastAPI's default server; one process is enough on Cloud Run |
-| Analyzer test tools (dev only) | pytest, httpx (for FastAPI `TestClient`), ruff | latest at F-01, pinned | Minimal set for tests + lint (C-07) |
+| Analyzer test tools (dev only) | pytest, httpx2 (for FastAPI `TestClient`), ruff | latest at F-01, pinned | Minimal set for tests + lint (C-07) |
 | Go tests | `testing` + `net/http/httptest` | – | No test framework needed |
 | Go lint | `gofmt -l`, `go vet` | toolchain | Built into the toolchain |
 | Containers | Multi-stage Docker builds | – | FR-08; independent images (C-04) |
@@ -32,7 +32,7 @@ Implements `specs/requirements.md`. Plays the role of the workflow's tech-stack 
               │  validate → call analyzer    │
               └──────────────┬───────────────┘
                              │  HTTP POST /analyze  (JSON)
-                             │  (private; mechanism = Q-01)
+                             │  (private: IAM + ID token, Q-01 = A)
                              ▼
               ┌──────────────────────────────┐
               │ Cloud Run service: analyzer  │  Python, FastAPI
@@ -66,6 +66,8 @@ services/api/
   internal/config/config.go    Load(getenv) → Config{Port, AnalyzerURL, AnalyzerTimeout} or error
   internal/analyzer/client.go  Client.Analyze(ctx, text) (Result, error); typed errors
                                ErrTimeout, ErrUnavailable, ErrBadResponse
+  internal/analyzer/idtoken.go optional http.RoundTripper adding an ID token from the
+                               metadata server, cached until shortly before expiry (Q-01 = A)
   internal/httpapi/handler.go  NewHandler(analyzer Analyzer, logger) http.Handler
                                routes /analyze and /healthz; JSON error helper
   internal/httpapi/validate.go request decoding + validation → (text, *apiError)
@@ -80,6 +82,8 @@ Error classification in `analyzer.Client`:
 - any other transport error (`*url.Error` with dial/DNS failure) → `ErrUnavailable` → `502 analyzer_unavailable`.
 - non-200 status, undecodable body, failed result check → `ErrBadResponse` → `502 analyzer_error`.
 - No retries (A-06). The `http.Client` is created once and reused (connection pooling).
+- A failure to fetch the ID token (only when `ANALYZER_AUTH=google-id-token`) → `ErrUnavailable`
+  → `502 analyzer_unavailable`.
 
 Logging (NFR-02): `slog.NewJSONHandler(os.Stdout)`; middleware logs `method`, `path`,
 `status`, `duration_ms`. The request body is never logged. Analyzer errors are logged with the
@@ -90,7 +94,7 @@ Shutdown (NFR-03): `signal.NotifyContext(SIGINT, SIGTERM)` → `server.Shutdown`
 ### Analyzer layout (`services/analyzer`)
 ```
 services/analyzer/
-  pyproject.toml               runtime deps: fastapi, uvicorn (exact pins); dev: pytest, httpx, ruff
+  pyproject.toml               runtime deps: fastapi, uvicorn (exact pins); dev: pytest, httpx2, ruff
   app/__init__.py
   app/analysis.py              analyze(text: str) -> AnalysisResult   (pure, no FastAPI imports)
   app/main.py                  FastAPI app: POST /analyze, GET /healthz; pydantic models
@@ -163,6 +167,7 @@ Configuration (environment):
 | `PORT` | no | `8080` | listen port (set by Cloud Run) |
 | `ANALYZER_URL` | **yes** | – | base URL of the analyzer, e.g. `http://localhost:8081`; the client calls `<ANALYZER_URL>/analyze` |
 | `ANALYZER_TIMEOUT` | no | `10s` | Go duration; total time for one analyzer call |
+| `ANALYZER_AUTH` | no | `none` | `none` or `google-id-token`: attach a Google-signed ID token (audience = `ANALYZER_URL`) from the metadata server (Q-01 = A); any other value → exit non-zero at startup |
 
 ### Private: analyzer (`text-analyzer`)
 
@@ -244,9 +249,9 @@ Optional notes: `--min-instances=1` on the analyzer against cold starts (R-01, c
 - Chosen: `pyproject.toml` installed with plain `pip` (no extra tool to learn, C-07).
 - Revisit if: lockfile reproducibility becomes a concern → add `uv` lock.
 
-## Open questions (need your answer at approval)
+## Decided questions (user, 2026-10-20: "zatwierdzam domyślne")
 
-### Q-01 How should the analyzer be private on Cloud Run? (costly to reverse: affects code, IAM and deploy docs)
+### Q-01 How should the analyzer be private on Cloud Run? → **A chosen**
 | Option | What it means | Code impact | Trade-off |
 |--------|---------------|-------------|-----------|
 | **A. IAM invoker + ID token (recommended)** | Analyzer deployed with `--no-allow-unauthenticated`; the API's service account gets `roles/run.invoker` on it; the API adds `Authorization: Bearer <ID token>` fetched from the Cloud Run metadata server (audience = `ANALYZER_URL`) | ~40 lines of stdlib Go (metadata server GET + small cache), switched on by `ANALYZER_AUTH=google-id-token`; off locally and in tests | The Cloud Run-native pattern and a good learning target; it is service-to-service platform auth, not end-user auth, so it does not contradict B-20 — but confirm you read B-20 the same way |
@@ -254,9 +259,9 @@ Optional notes: `--min-instances=1` on the analyzer against cold starts (R-01, c
 | C. Both A and B | Defence in depth | as A | Most setup; overkill for an MVP |
 | D. Public analyzer, "private" by convention | `--allow-unauthenticated` on both | none | Simplest, but does not meet "private" (B-4) |
 
-### Q-02 Limits
-10,000 characters per text, 256 KiB request body, 10 s analyzer timeout — keep?
+### Q-02 Limits → **kept**
+10,000 characters per text, 256 KiB request body, 10 s analyzer timeout.
 
 ### Q-03 Word definition
 Letters/digits, inner apostrophes (`'` or `’`), `_` and all other punctuation split words,
-digits count as words, case-insensitive, no stop words — keep?
+digits count as words, case-insensitive, no stop words → **kept**.
