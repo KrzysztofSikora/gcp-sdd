@@ -1,0 +1,19 @@
+# Local run of both services, wired the way they run on Cloud Run (FR-09).
+# Only the API is published; the analyzer is reachable from the API alone.
+services:
+  analyzer:
+    build: services/analyzer
+    image: text-analyzer:dev
+    environment:
+      PORT: "8080"
+
+  api:
+    build: services/api
+    image: text-api:dev
+    depends_on:
+      - analyzer
+    environment:
+      PORT: "8080"
+      ANALYZER_URL: http://analyzer:8080
+    ports:
+      - "8080:8080"

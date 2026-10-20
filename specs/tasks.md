@@ -18,7 +18,7 @@ the 1–2 hour budget (B-19); S-03 is the first thing to cut.
 | F-01 | #2 | repo-skeleton | foundation | C-01 … C-09, NFR-04 | - | S (~15 min) | done |
 | S-01 | #3 | analyzer-service | slice | FR-02, FR-05, FR-06, FR-07 AC1, FR-08 | F-01 | M (~25 min) | done |
 | S-02 | #4 | api-analyze | slice | FR-01, FR-03, FR-04, FR-06, FR-07, FR-08, NFR-02, NFR-03 | S-01 | M (~40 min) | done |
-| S-03 | #5 | local-compose | slice | FR-09, NFR-01 | S-02 | S (~10 min) | todo |
+| S-03 | #5 | local-compose | slice | FR-09, NFR-01 | S-02 | S (~10 min) | done |
 | S-04 | #6 | cloud-run-deploy | slice | FR-10, Q-01 = A | S-02 | S (~20 min) | todo |
 
 ## Items
@@ -85,9 +85,9 @@ the 1–2 hour budget (B-19); S-03 is the first thing to cut.
 - Covers: FR-09 AC1, NFR-01.
 - Depends on: S-02
 - Tasks:
-  - [ ] S-03.1 `compose.yaml`: analyzer (not published) + API (`8080:8080`,
+  - [x] S-03.1 `compose.yaml`: analyzer (not published) + API (`8080:8080`,
         `ANALYZER_URL=http://analyzer:8080`).
-  - [ ] S-03.2 `scripts/smoke.sh`: waits for `/healthz`, posts the FR-01 AC1 example, compares
+  - [x] S-03.2 `scripts/smoke.sh`: waits for `/healthz`, posts the FR-01 AC1 example, compares
         the body; README section "Run locally".
 - Acceptance: `docker compose up --build -d && scripts/smoke.sh` exits 0.
 - Unknowns: Docker availability in CI — smoke runs locally only, not as a gate.
