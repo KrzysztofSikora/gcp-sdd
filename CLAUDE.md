@@ -21,7 +21,8 @@ MeshCore Guardian; project artifacts are mapped to `specs/`, see *Setup in this 
   They never ask; they record decisions in the plan and the PR collects them.
   `.claude/workflow/address-pr <n>` applies the user's PR decisions.
 - Rules for autonomous runs: `.claude/workflow/autonomy.md`.
-- Do not start coding a task outside that loop.
+- Do not start coding a task outside that loop, unless the user asks for it explicitly (then
+  note it in `specs/tasks.md`, as for the first implementation on 2026-10-20).
 
 ## Artifacts
 

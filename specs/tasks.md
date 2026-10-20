@@ -1,7 +1,11 @@
 # Tasks (roadmap)
 
-Status: **DRAFT, awaiting user approval** (B-15). Nothing below is started before approval.
+Status: **APPROVED** by the user on 2026-10-20 ("zatwierdzam domyślne"): Q-01 = A, Q-02 and Q-03 kept as proposed.
 Sources: `specs/requirements.md`, `specs/design.md`.
+
+Execution note (2026-10-20): the user asked for all items in one go without stops. The
+`ship` runner cannot publish from this cloud session (`gh` is not logged in), so the items are
+implemented directly in the interactive session, one commit per item, on one branch.
 
 Order: the skeleton and gates first, then the analyzer (the API depends on its contract), then
 the API, then local wiring and deployment docs. Each item is one change (one branch, one PR) in
@@ -15,7 +19,7 @@ the 1–2 hour budget (B-19); S-03 is the first thing to cut.
 | S-01 | - | analyzer-service | slice | FR-02, FR-05, FR-06, FR-07 AC1, FR-08 | F-01 | M (~25 min) | todo |
 | S-02 | - | api-analyze | slice | FR-01, FR-03, FR-04, FR-06, FR-07, FR-08, NFR-02, NFR-03 | S-01 | M (~40 min) | todo |
 | S-03 | - | local-compose | slice | FR-09, NFR-01 | S-02 | S (~10 min) | todo |
-| S-04 | - | cloud-run-deploy | slice | FR-10 (+ Q-01 code if option A) | S-02 | S (~20 min) | todo |
+| S-04 | - | cloud-run-deploy | slice | FR-10, Q-01 = A | S-02 | S (~20 min) | todo |
 
 ## Items
 
@@ -50,7 +54,7 @@ the 1–2 hour budget (B-19); S-03 is the first thing to cut.
 - Acceptance: requirement ACs listed under *Covers*; `docker run -e PORT=8081 -p 8081:8081`
   then `curl localhost:8081/healthz` → `{"status":"ok"}`.
 - Unknowns: -
-- Decided up front: word rules per Q-03 answer.
+- Decided up front: word rules as proposed (Q-03 kept, user).
 - Size: M
 
 ### S-02 Go API with validation and analyzer client (`api-analyze`)
@@ -73,7 +77,7 @@ the 1–2 hour budget (B-19); S-03 is the first thing to cut.
 - Acceptance: requirement ACs listed under *Covers*; `go test ./...` with no network beyond
   localhost.
 - Unknowns: -
-- Decided up front: limits per Q-02 answer; stdlib only (NFR-04).
+- Decided up front: limits as proposed (Q-02 kept, user); stdlib only (NFR-04).
 - Size: M
 
 ### S-03 Local end-to-end run (`local-compose`) — Should
@@ -95,7 +99,7 @@ the 1–2 hour budget (B-19); S-03 is the first thing to cut.
 - Covers: FR-10 AC1–AC4; Q-01.
 - Depends on: S-02
 - Tasks:
-  - [ ] S-04.1 *(only if Q-01 = A or C)* `internal/analyzer`: optional ID-token transport
+  - [ ] S-04.1 `internal/analyzer`: optional ID-token transport
         (`ANALYZER_AUTH=google-id-token`; token from the metadata server, cached until expiry);
         tests with a fake metadata server; off by default.
   - [ ] S-04.2 `deploy/cloud-run.md`: prerequisites (APIs to enable, `gcloud` login — done by
@@ -104,7 +108,7 @@ the 1–2 hour budget (B-19); S-03 is the first thing to cut.
   - [ ] S-04.3 README: link to the deployment doc and a "costs" note (min instances, free tier).
 - Acceptance: FR-10 AC1–AC4 reviewed by reading; no command executed by the workflow.
 - Unknowns: real Cloud Run behaviour is `UNVERIFIED` until the person deploys (human check in the PR).
-- Decided up front: depends on Q-01 answer.
+- Decided up front: Q-01 = A (user): `--no-allow-unauthenticated` on the analyzer, `roles/run.invoker` for the API's service account, ID token from the metadata server.
 - Size: S
 
 ## Later
@@ -114,5 +118,5 @@ the 1–2 hour budget (B-19); S-03 is the first thing to cut.
 - Mutation testing (decide the tools in `/test-plan`).
 
 ## Open roadmap questions
-- Q-01, Q-02, Q-03 from `specs/design.md` — answers go into *Decided up front* above.
+- Q-01, Q-02, Q-03: decided (see *Decided up front*).
 - Create one GitHub issue per item and fill the *Issue* column? (optional; `ship #<n>` uses them)
